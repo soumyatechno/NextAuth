@@ -3,7 +3,8 @@
 import Link from "next/link"
 import React,{useState,useEffect} from "react"
 import { useRouter } from "next/router"
-// import { axios } from "axios"
+import  axios  from "axios"
+import toast,{ Toast, Toaster } from "react-hot-toast"
 
 
 const Signup = () => {
@@ -13,7 +14,29 @@ const Signup = () => {
     username:""
   });
 
+  const [button, setButton] = useState(false);
+  const router = useRouter();
+
+  useEffect  (()=>{
+    if(user.email.length>0 && user.password.length>0 && user.username.length > 0){
+      setButton(false);
+    }
+    else{
+      setButton(true)
+    }
+
+  },[user]);
+
   const handleSignup = async() =>{
+    try{
+      const response = await axios.post("./api/users/signup",user);
+      console.log("Signup success", response.data);
+      router.push('/');
+
+    } catch(error:any){
+      console.log("Signup failed", error.message);
+      toast(error.message);
+    }
    
   }
   return (
@@ -22,7 +45,7 @@ const Signup = () => {
       <hr/>
       <label htmlFor="username">username</label>
       <input
-      className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-noe focus:border-gray-600"
+      className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-noe focus:border-gray-600 text-black"
       id="username"
       type="text"
       value={user.username}
@@ -32,7 +55,7 @@ const Signup = () => {
       <hr/>
       <label htmlFor="email">email</label>
       <input
-      className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-noe focus:border-gray-600"
+      className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-noe focus:border-gray-600 text-black"
       id="email"
       type="text"
       value={user.email}
@@ -42,7 +65,7 @@ const Signup = () => {
       <hr/>
       <label htmlFor="password">password</label>
       <input
-      className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-noe focus:border-gray-600"
+      className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-noe focus:border-gray-600 text-black"
       id="password"
       type="password"
       value={user.password}
@@ -50,8 +73,11 @@ const Signup = () => {
       placeholder="password"
       />
       <button 
-      className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-noe focus:border-gray-600 text-2xl"
-      onClick={handleSignup}>Signup</button>
+      className="px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-noe focus:border-gray-600 text-xl"
+      onClick={handleSignup}
+      // disabled={button}
+      >{button ? "No signup" : "Signup"}</button>
+      <Toaster/>
       <Link href="/login">View to Login</Link>
       
     </div>
